@@ -1,0 +1,47 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+  .base {
+    padding: 20px;
+  }
+  .title {
+    padding-bottom: 20px;
+  }
+  .addParser {
+    align-content: center;
+  }
+</style>
+
+<body>
+  <div class="container text-center" style="background-color: black">
+    <h1 style="color: white"><b>Планета Инструмент</h1>
+  </div>
+  <div class="container base">
+    <ul class="nav nav-tabs">
+      <li><a href="{% url 'home' %}">Parse</a></li>
+      <li><a href="{% url 'add_site' %}">Add site</a></li>
+      <li><a href="{% url 'view_result' %}">View result</a></li>
+      <li><a href="{% url 'change' %}">View change</a></li>
+
+    </ul>
+  </div>
+  <div class="container text-center title">
+    <h1>{% block title %}{% endblock %}</h1>
+  </div>
+  <div class="container text-center">
+    {% block content %}{% endblock %}
+  </div>
+
+</body>
+</html>

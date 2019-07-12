@@ -1,0 +1,53 @@
+{% extends 'parserApp/base.html' %}
+
+{% block title %}View change{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <form method="POST" >
+      {% csrf_token %}
+      <ul class="nav nav-tabs">
+        {{ forms }}
+        <button type="submit" class="btn btn-primary btn-xs">Выбрать</button>
+      </ul>
+    </form>
+  </div>
+
+  {% if messages %}
+      {% for k in messages %}
+        <div class="alert" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span></button>
+                <p style="color: black">{{ k }}</p>
+        </div>
+      {% endfor %}
+  {% endif %}
+<br>
+
+  {% if post %}
+    <div class="alert" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+            <table class="table table-hover" align="left">
+              <thead>
+                <tr>
+                  <th>ID Product</th>
+                  <th>Changed field</th>
+                  <th>Old value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in post %}
+                <tr>
+                  <td>{{i.id_product}}</td>
+                  <td>{{i.changed_field}}</td>
+                  <td>{{i.old_value}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+    </div>
+    {% endif %}
+
+
+{% endblock %}

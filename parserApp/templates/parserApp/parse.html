@@ -1,0 +1,14 @@
+{% extends 'parserApp/base.html' %}
+
+{% block title %}Parse{% endblock %}
+
+{% block content %}
+  <div class="row">
+      <form  action="." method="POST">
+          {% csrf_token %}
+            {{site}}
+          <button type="submit" class="btn btn-primary btn-xs">Парсить</button>
+      </form>
+  </div>
+
+{% endblock %}
