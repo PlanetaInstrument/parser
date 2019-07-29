@@ -1,0 +1,32 @@
+<!-- {% extends 'parserApp/result.html' %} -->
+
+{% block filter %}
+  <form method="get">
+    {{ filter.form.as_p }}
+    <button type="submit">Search</button>
+  </form>
+
+  <div class="alert" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span></button>
+    <table class="table table-hover" align="left">
+      <thead>
+        <tr>
+          <th>{{ name_2 }}</th>
+        </tr>
+        <tr>
+          <th>Article</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for parser in filter.qs %}
+          <tr>
+            <td>{{ parser.article }}</td>
+            <td>{{ parser.description }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

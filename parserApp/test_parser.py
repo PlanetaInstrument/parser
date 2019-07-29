@@ -64,8 +64,8 @@ def parser_site(post):
     class_link_product = post.class_link_product
     class_value_link_product = post.class_value_link_product.replace('*', "")
 
-    all_link = [link_first, link_second, link_fourth]
-    start_links = [link_first, link_second, link_fourth]
+    all_link = []
+    start_links = [link_first]
 
     print("PEREMENNUE")
 
@@ -76,45 +76,66 @@ def parser_site(post):
         source = requests.get(link+l).text
         soup = BeautifulSoup(source, 'lxml')   # soup - это ссылка на страницу с товарами
 
-        inspect(soup)
+        category(soup)
 
-    def inspect(soup): # перебираем категории или переходим на страницу с товарами
+    def category(soup): # ищет главные категории
         print (" ")
-        print ("inspect")
+        print ("category")
         print (" ")
-        if soup.find_all(atr_products, attrs={class_products:class_value_products}) == []: # товары
-            if soup.find_all(atr_category, attrs={class_category:class_value_category}) == []: # подкатегории
-                if soup.find_all(atr_main_category, attrs={class_main_category:class_value_main_category}): # main категории
-                    for i in soup.find_all(atr_main_category, attrs={class_main_category:class_value_main_category}):
-                        links = i.find('a')
-                        link_item = links.attrs['href']
-                        if link_item in all_link: # если по этой ссылке уже переходили
-                            print(link_item, "-----------------LINK_ITEM---------------")
-                            continue
-                        else:
-                            source2 = requests.get(link+link_item).text
-                            soup = BeautifulSoup(source2, 'lxml')  # soup - это ссылка на следующую страницу, возможно на страницу с товаром
-                            all_link.append(link_item)
-                            inspect(soup)
-                else:
-                    print('------end parser------')
-                    return 1
-            else:
-                for item in soup.find_all(atr_category, attrs={class_category:class_value_category}):  # for перебирает все категории на странице
-
-                    # находим ссылку для следующей страницы
-                    links = item.find('a')
+        if soup.find_all(atr_main_category, attrs={class_main_category:class_value_main_category}):
+            for i in soup.find_all(atr_main_category, attrs={class_main_category:class_value_main_category}):
+                try:
+                    links = i.find('a')
                     link_item = links.attrs['href']
                     if link_item in all_link: # если по этой ссылке уже переходили
+                        print(link_item, "-----------------LINK_ITEM---------------")
                         continue
                     else:
                         source2 = requests.get(link+link_item).text
-                        soup = BeautifulSoup(source2, 'lxml')  # soup - это ссылка на следующую страницу, возможно на страницу с товаром
+                        soup = BeautifulSoup(source2, 'lxml')  # soup - это ссылка на страницу с подкатегорией
                         all_link.append(link_item)
-                        inspect(soup)
-
+                        subCategory(soup)
+                except Exception as e:
+                    pass
         else:
+            subCategory(soup)
+
+    def subCategory(soup): # ищет подкатегории
+        print (" ")
+        print ("subCategory")
+        print (" ")
+        if soup.find_all(atr_products, attrs={class_products:class_value_products}):
             all_product(soup)
+        elif soup.find_all(atr_category, attrs={class_category:class_value_category}):
+            for item in soup.find_all(atr_category, attrs={class_category:class_value_category}):
+                link_subCategory = item.find('a').attrs['href']
+                print(link_subCategory, '-----Мы посмотрели сюда------')
+                if link_subCategory in all_link:
+                    continue
+                else:
+                    all_link.append(link_subCategory)
+                    source = requests.get(link+link_subCategory).text
+                    soup2 = BeautifulSoup(source, 'lxml')
+                    return subCategory(soup2)
+        else:
+            category(soup)
+
+    def all_product(soup):
+        print (" ")
+        print ("all_product")
+        print (" ")
+        for item in soup.find_all(atr_products, attrs={class_products:class_value_products}):  # for перебирает все товары на странице
+
+            # находим ссылку для товара под индексом item (смотреть верхний for)
+            links = item.find(atr_link_product, attrs={class_link_product:class_value_link_product}).a
+            link_item = links.attrs['href']
+            # all_link.append(link_item)
+            source2 = requests.get(link+link_item).text
+            soup2 = BeautifulSoup(source2, 'lxml')  # soup - это ссылка на конкретный товар
+
+            add_item_db(soup2, link_item)  # мы на странице конкретного товара, берем нужную инфу и заливаем в базу
+
+        func_navigation(soup)
 
     def add_item_db(soup2, link_item):  # мы на странице конкретного товара, берем нужную инфу и заливаем в базу
         print (" ")
@@ -185,40 +206,25 @@ def parser_site(post):
             obj.save()
             print("EXCEPT---------")
 
-    def all_product(soup): # перебор по всем товарам на странице
-        print (" ")
-        print ("all_product")
-        print (" ")
-        for item in soup.find_all(atr_products, attrs={class_products:class_value_products}):  # for перебирает все товары на странице
-
-            # находим ссылку для товара под индексом item (смотреть верхний for)
-            links = item.find(atr_link_product, attrs={class_link_product:class_value_link_product}).a
-            link_item = links.attrs['href']
-            all_link.append(link_item)
-            source2 = requests.get(link+link_item).text
-            soup2 = BeautifulSoup(source2, 'lxml')  # soup - это ссылка на конкретный товар
-
-            add_item_db(soup2, link_item)  # мы на странице конкретного товара, берем нужную инфу и заливаем в базу
-
-        func_navigation(soup)
-
     def back_page(soup):   # функция переходит на предыдущую страницу в панели навигации по каталогу
         print (" ")
         print ("back_page")
         print (" ")
-        for backs in soup.find_all(atr_back, attrs={class_back:class_value_back}):
-            back = backs.find_all('a')[-1]
-            back = back.attrs['href']
-            source3 = requests.get(link+back).text
-            soup = BeautifulSoup(source3, 'lxml')  # soup - это ссылка на предыдущую страницу в панели навигации, по каталогу
-            inspect(soup)
+        backs = soup.find(atr_back, attrs={class_back:class_value_back})
+        print(backs, '--------all backs ------------')
+        back = backs.find_all('a')[-1]
+        print(back, '-----------back------------------')
+        back = back.attrs['href']
+        print(back, '----Мы перешли сюда-----')
+        source3 = requests.get(link+back).text
+        soup2 = BeautifulSoup(source3, 'lxml')  # soup - это ссылка на предыдущую страницу в панели навигации, по каталогу
+        subCategory(soup2)
 
-    def func_navigation(soup): # если страниц с товаров больше 1, просматриваем все
+    def func_navigation(soup): # если страниц с товаром больше 1, просматриваем все
         print (" ")
         print ("func_navigation")
         print (" ")
         if soup.find(atr_navigation, attrs={class_navigation:class_value_navigation}) == None:
-            print("BACK_PAGE")
             back_page(soup)
         else:
             print ("NEXT_PAGE")
@@ -228,21 +234,7 @@ def parser_site(post):
             soup = BeautifulSoup(source1, 'lxml')
             all_product(soup)
 
-    # for i in start_links:
-    #     my_thread = threading.Thread(target=multi, args=(i,))
-    #     print()
-    #     print('THREAD ----------', i)
-    #     print()
-    #     my_thread.start()
-
-    # multi(link_first)
-
-    with Pool(2) as p:
-       p.map(multi, start_links)
-
-    print("end parser--------------------------")
-
-
+    multi(link_first)
 
     for i in ParserResult.objects.filter(id_site=Site.objects.get(id = post.id)):
         n = i.article

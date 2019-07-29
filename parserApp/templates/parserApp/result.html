@@ -9,7 +9,7 @@
           {% csrf_token %}
           <ul class="nav nav-tabs">
             {{ forms }}
-            <button type="submit" class="btn btn-primary btn-xs">Выбрать</button>
+            <button type="submit" class="btn btn-primary btn-xs" name="_choose">Выбрать</button>
           </ul>
         </form>
   </div>
@@ -23,23 +23,31 @@
         {% endfor %}
     {% endif %}
 <br>
-  {% if post and post_2 %}
-    <div class="container">
-      <div class="row">
+{% if post and post_2 %}
+  <div class="container">
+    <div class="row">
         <div class="col-sm-6">
           <div class="alert" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span></button>
+              <!-- <form method="get">
+                {{ filter_1.form.as_p }}
+                <button type="submit" name="_filter_1">Search</button>
+              </form> -->
             <table class="table table-hover" align="left">
               <thead>
                 <tr>
-                  <th>Description {{ name }}</th>
-                  <th>Description {{ name_2 }}</th>
+                  <th>{{ name }}</th>
+                </tr>
+                <tr>
+                  <th>Article</th>
+                  <th>Description</th>
                 </tr>
               </thead>
               <tbody>
                 {% for i in post %}
                   <tr>
+                    <td>{{i.article}}</td>
                     <td>{{i.description}}</td>
                   </tr>
                 {% endfor %}
@@ -47,8 +55,37 @@
             </table>
           </div>
         </div>
+
+      <div class="col-sm-6">
+        <div class="alert" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+            <!-- <form method="get">
+              {{ filter_2.form.as_p }}
+              <button type="submit" name="_filter_2">Search</button>
+            </form> -->
+          <table class="table table-hover" align="right">
+            <thead>
+              <tr>
+                <th>{{ name_2 }}</th>
+              </tr>
+              <tr>
+                <th>Article</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for parser in post_2 %}
+                <tr>
+                  <td>{{ parser.article }}</td>
+                  <td>{{ parser.description }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+  </div>
   {% endif %}
-
 {% endblock %}

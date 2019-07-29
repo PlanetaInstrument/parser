@@ -18,6 +18,10 @@ class Site(models.Model):
     class_category = models.CharField(max_length=200, default='', blank=True, verbose_name=('Класс категории'),)
     class_value_category = models.CharField(max_length=200, default='', blank=True, verbose_name=('Класс категории - значение'),)
 
+    atr_main_category = models.CharField(max_length=200, default='', blank=True, verbose_name=('Атрибут главной категории'),)
+    class_main_category = models.CharField(max_length=200, default='', blank=True, verbose_name=('Класс главной категории'),)
+    class_value_main_category = models.CharField(max_length=200, default='', blank=True, verbose_name=('Класс главной категории - значение'),)
+
     atr_head = models.CharField(max_length=200, default='', blank=True, verbose_name=('Атрибут заголовка'),)
     class_head = models.CharField(max_length=200, default='', blank=True, verbose_name=('Класс заголовка'),)
     class_value_head = models.CharField(max_length=200, default='', blank=True, verbose_name=('Класс заголовка - значение'),)

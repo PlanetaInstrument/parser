@@ -7,8 +7,27 @@
       <form  action="." method="POST">
           {% csrf_token %}
             {{site}}
-          <button type="submit" class="btn btn-primary btn-xs">Парсить</button>
+          <button type="submit" class="btn btn-primary btn-xs" name="_parse">Parse</button>
+          <button type="submit" class="btn btn-primary btn-xs" name="_edit">Edit</button>
+          <button type="submit" class="btn btn-primary btn-xs" name="_delete">Delete</button>
       </form>
   </div>
+  {% if messages %}
+      {% for k in messages %}
+        <div class="alert" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span></button>
+                <p style="color: black">{{ k }}</p>
+        </div>
+      {% endfor %}
+  {% endif %}
+  <form class="" action="." method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    {% if form %}
+    <button type="submit" class="btn btn-primary btn-xs" name="_edit">Edit</button>
+    {% endif %}
+  </form>
+<br>
 
 {% endblock %}
